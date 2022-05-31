@@ -27,6 +27,9 @@ class MNistTrial(PyTorchTrial):
     def __init__(self, context: PyTorchTrialContext) -> None:
         self.context = context
 
+        if os.environ['HOME'] == '/':
+            os.environ['HOME'] = '/app'
+
         # Create a unique download directory for each rank so they don't overwrite each
         # other when doing distributed training.
         self.download_directory = f"/tmp/data-rank{self.context.distributed.get_rank()}"

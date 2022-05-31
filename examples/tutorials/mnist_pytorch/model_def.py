@@ -20,6 +20,8 @@ from determined.pytorch import DataLoader, PyTorchTrial, PyTorchTrialContext
 
 import data
 
+import os
+
 TorchData = Union[Dict[str, torch.Tensor], Sequence[torch.Tensor], torch.Tensor]
 
 

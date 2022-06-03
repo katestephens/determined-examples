@@ -1,4 +1,6 @@
 name: fashion_mnist_tf_keras_adaptive_search
+resources:
+  resource_pool: compute-pool-on-premise
 hyperparameters:
   global_batch_size: 32
   dense1:
@@ -14,3 +16,6 @@ searcher:
     epochs: 5
   max_trials: 10
 entrypoint: model_def:FashionMNISTTrial
+profiling: 
+  enabled: true
+

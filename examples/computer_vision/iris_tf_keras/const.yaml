@@ -13,4 +13,5 @@ searcher:
   smaller_is_better: false
   max_length:
     batches: 5000
+debug: true
 entrypoint: model_def:IrisTrial

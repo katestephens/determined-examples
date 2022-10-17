@@ -1,0 +1,30 @@
+name: object_detection_const_hp
+labels:
+  - "object detection"
+  - "project blue"
+environment:
+  image: determinedaicustomer/determined-demo-object-detection:0.17.1
+data:
+  url: https://determined-ai-public-datasets.s3-us-west-2.amazonaws.com/PennFudanPed/PennFudanPed.zip
+entrypoint: model_def:ObjectDetectionModel
+hyperparameters:
+  global_batch_size: 4
+  learning_rate: 0.000125
+  momentum: 0.75
+  weight_decay: 0.0005
+min_validation_period:
+  records: 68
+records_per_epoch: 136
+searcher:
+  max_length:
+    epochs: 2
+  metric: val_avg_iou
+  name: single
+  smaller_is_better: false
+max_restarts: 5
+resources:
+  slots_per_trial: 1
+profiling:
+  enabled: true
+  begin_on_batch: 0
+  end_after_batch: null

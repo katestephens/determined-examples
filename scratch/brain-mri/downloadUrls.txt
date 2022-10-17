@@ -1,0 +1,3 @@
+These urls are timebound and expire after 24 hrs, you can visit the portal again to get new urls after the expiration.
+
+curl -o apls-9.12.zip "https://h30279.www3.hpe.com/prdownloads/apls-9.12.zip?downloadid=zdVlfIpRPecaFxxDElZy9R_TKfV3lw3soLQY2ChYhR-r8DLU1ZXUoeau7-GqRV-_T3GtqJmgAbJqUdgPpEOwFNvbZNNUuhtI2lcdFIpPsZPP-1gpqu4cyW0l4U17HoNA&merchantId=SW_FREE&rnid=1.0&bpid=ISS&egid=F&__dlk__=1664139171_a35f8a65da707b4a2fb407964fe35ff3" 

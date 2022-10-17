@@ -7,7 +7,7 @@ hyperparameters:
   layer3_dropout: 0.5
   global_batch_size: 512 # Per-GPU batch size of 32
 resources:
-  slots_per_trial: 16
+  slots_per_trial: 2
 records_per_epoch: 50000
 searcher:
   name: single

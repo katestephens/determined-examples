@@ -18,6 +18,8 @@ hyperparameters:
     num_training_steps: 15000 # This is the number of optimizer steps. Set it
                               # to max_length.batches (assuming we step every
                               # batch in the LR scheduler definition)
+resources:
+  resource_pool: compute-pool-on-prem
 searcher:
     name: single
     metric: f1
@@ -31,6 +33,6 @@ min_validation_period:
                    # validate often to give more frequent feedback.
 data:
     pretrained_model_name: "bert-base-uncased"
-    download_data: False
+    download_data: True
     task: "SQuAD1.1"
 entrypoint: model_def:BertSQuADPyTorch

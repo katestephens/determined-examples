@@ -1,6 +1,8 @@
 # Data
 *.png 
 *.jpeg
+*.zip
+*.tiff
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

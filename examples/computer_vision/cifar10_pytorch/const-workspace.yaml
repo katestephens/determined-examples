@@ -2,7 +2,7 @@ name: cifar10_pytorch_const_onprem
 workspace: nanos
 project: cifar10
 resources: 
-  resource_pool: compute-pool-on-prem
+  resource_pool: mig
 hyperparameters:
   learning_rate: 1.0e-4
   learning_rate_decay: 1.0e-6

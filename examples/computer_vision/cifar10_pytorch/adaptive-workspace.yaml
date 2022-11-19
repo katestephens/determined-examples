@@ -1,6 +1,8 @@
 name: cifar10_pytorch_adaptive_search
 workspace: nanos
 project: cifar10
+resources: 
+  resource_pool: mig
 hyperparameters:
   learning_rate:
     type: log

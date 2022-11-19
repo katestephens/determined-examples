@@ -1,0 +1,26 @@
+bind_mounts:
+- container_path: /run/determined/workdir/shared_fs
+  host_path: /mnt/dfcore/dfcore.ailab.local/00-det/shared_fs
+  propagation: rprivate
+  read_only: false
+- container_path: /determined-checkpoints
+  host_path: /mnt/dfcore/dfcore.ailab.local/00-det/checkpoints
+  propagation: rprivate
+  read_only: false
+- container_path: /data
+  host_path: /mnt/dfcore/dfcore.ailab.local/00-det/data
+debug: false
+environment:
+  image:
+    cpu: determinedai/environments:py-3.8-pytorch-1.10-tf-2.8-cpu-096d730
+    cuda: determinedai/environments:cuda-11.3-pytorch-1.10-tf-2.8-gpu-096d730
+    rocm: determinedai/environments:rocm-5.0-pytorch-1.10-tf-2.7-rocm-096d730
+idle_timeout: null
+notebook_idle_type: kernels_or_terminals
+resources:
+  agent_label: ''
+  devices: null
+  resource_pool: aux
+  slots: 0
+  weight: 1
+work_dir: null

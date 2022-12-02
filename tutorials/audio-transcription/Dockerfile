@@ -6,7 +6,7 @@ COPY ./* /app/
 RUN apt-get update && \
    DEBIAN_FRONTEND="noninteractive" apt-get -y install sox unzip libsndfile1 ffmpeg
 # Custom Configuration
-RUN pip install wget unidecode sox gradio && \
+RUN pip install wget unidecode sox gradio pytube youtube_dl librosa soundfile os && \
    pip install Cython && \
    pip install nemo-toolkit['all']
 

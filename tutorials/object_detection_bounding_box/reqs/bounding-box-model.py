@@ -1,27 +1,38 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+# # Adding Dependencies
+
+# In[56]:
+
+
+#!pip install -r ./reqs/requirements.txt
+#!pip install ipywidgets
+#!conda install -c conda-forge ipywidgets
+#!conda install -n base -c conda-forge jupyterlab_widgets
+
+
 # # Bounding Box Model
 # This notebook explains how to generage a bounding box model.<br/>
 # While many of the whale pictures in the dataset are already cropped tight around the whale fluke, in some images the whale fluke occupies only a small area of the picture. Zooming in the relevant part of the picture provides greater accuracy to a classification model. To automate the process, this notebook explains how to construct a convolutional neural network (CNN) capable of estimating the whale bounding box.<br/>
 # Using this model, whale pictures can be cropped automatically to a more uniform appearance. This facilitates training of classification models, and improves the test accuracy.<br/>
 # Training of the bounding box model is performed over a dataset of 1200 bounding boxes for pictures selected from the Humpback Whale Identification Challenge training set. 1000 pictures are used for training, while 200 are reserved for validation.
 
-# In[5]:
+# In[70]:
 
 
 # Suppress annoying stderr output when importing keras.
-import sys
-old_stderr = sys.stderr
-sys.stderr = open('/dev/null', 'w')
-import keras
-sys.stderr = old_stderr
+#import sys
+#old_stderr = sys.stderr
+#sys.stderr = open('/dev/null', 'w')
+#import keras
+#sys.stderr = old_stderr
 
 
 # # Read the cropping dataset
 # Once decoded, the variable *data* is a list of tuples. Each tuple contains the picture filename and a list of coordinates.
 
-# In[6]:
+# In[71]:
 
 
 with open('./input/humpback-whale-identification-fluke-location/cropping.txt', 'rt') as f: data = f.read().split('\n')[:-1]
@@ -30,9 +41,7 @@ data = [(p,[(int(coord[i]),int(coord[i+1])) for i in range(0,len(coord),2)]) for
 data[0] # Show an example: (picture-name, [coordinates])
 
 
-# The coordinates represent points on the fluke edge. The extremum values can be used to construct a bounding box.
-
-# In[7]:
+# In[72]:
 
 
 from PIL import Image as pil_image
@@ -40,8 +49,8 @@ from PIL.ImageDraw import Draw
 from os.path import isfile
 
 def expand_path(p):
-    if isfile('../input/whale-categorization-playground/train/' + p): return '../input/whale-categorization-playground/train/' + p
-    if isfile('../input/whale-categorization-playground/test/' + p): return '../input/whale-categorization-playground/test/' + p
+    if isfile('./input/whale-categorization-playground/train/' + p): return './input/whale-categorization-playground/train/' + p
+    if isfile('./input/whale-categorization-playground/test/' + p): return './input/whale-categorization-playground/test/' + p
     return p
 
 def read_raw_image(p):
@@ -72,6 +81,8 @@ draw.rectangle(box, outline='red')
 img
 
 
+# The coordinates represent points on the fluke edge. The extremum values can be used to construct a bounding box.
+
 # # Image preprocessing code
 # Images are preprocessed by:
 # 1. Converting to black&white;
@@ -82,7 +93,7 @@ img
 # 
 # These operation are performed by the following code that is later invoked when preparing the corpus.
 
-# In[8]:
+# In[73]:
 
 
 # Define useful constants
@@ -90,7 +101,7 @@ img_shape  = (128,128,1)
 anisotropy = 2.15
 
 
-# In[9]:
+# In[74]:
 
 
 import random
@@ -178,7 +189,7 @@ def coord_transform(list, trans):
 # # Prepare the corpus
 # Split the corpus between training and validation data. Duplicate the training data 16 times to make reasonable size training epochs.
 
-# In[10]:
+# In[75]:
 
 
 from sklearn.model_selection import train_test_split
@@ -191,7 +202,7 @@ train += train
 len(train),len(val)
 
 
-# In[ ]:
+# In[76]:
 
 
 import matplotlib.pyplot as plt
@@ -210,6 +221,7 @@ def show_whale(imgs, per_row=5):
 
 val_a = np.zeros((len(val),)+img_shape,dtype=K.floatx()) # Preprocess validation images 
 val_b = np.zeros((len(val),4),dtype=K.floatx()) # Preprocess bounding boxes
+
 for i,(p,coords) in enumerate(tqdm_notebook(val)):
     img,trans      = read_for_validation(p)
     coords         = coord_transform(coords, mat_inv(trans))
@@ -236,8 +248,8 @@ show_whale([read_raw_image(val[idx][0]), img], per_row=2)
 # In[ ]:
 
 
-from keras.utils import Sequence
-
+#from keras.utils import Sequence
+from tensorflow.keras.utils import Sequence
 class TrainingData(Sequence):
     def __init__(self, batch_size=32):
         super(TrainingData, self).__init__()
@@ -276,12 +288,12 @@ show_whale([read_raw_image(train[0][0]), img], per_row=2)
 # # Keras Model
 # The following code fragment shows the bounding box model construction.
 
-# In[ ]:
+# In[79]:
 
 
-from keras.engine.topology import Input
-from keras.layers import BatchNormalization, Concatenate, Conv2D, Dense, Dropout, Flatten, MaxPooling2D
-from keras.models import Model
+#from keras.engine.topology import Input
+from tensorflow.keras.layers import Input, BatchNormalization, Concatenate, Conv2D, Dense, Dropout, Flatten, MaxPooling2D
+from tensorflow.keras.models import Model
 
 def build_model(with_dropout=True):
     kwargs     = {'activation':'relu', 'padding':'same'}
@@ -358,8 +370,8 @@ model.summary()
 # In[ ]:
 
 
-from keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
-from keras.optimizers import Adam
+from tensorflow.keras.callbacks import EarlyStopping, ModelCheckpoint, ReduceLROnPlateau
+from tensorflow.keras.optimizers import Adam
 
 for num in range(1, 4):
     model_name = 'cropping-%01d.h5' % num
@@ -379,7 +391,7 @@ for num in range(1, 4):
 
 # Select the best of the three attempts.
 
-# In[ ]:
+# In[83]:
 
 
 model.load_weights('cropping-1.h5')
@@ -400,7 +412,7 @@ loss1, loss2, loss3, model_name
 # Batch normalization also behaves differently during training and inference. During training batches are normalized, but at the same time a running average of batch mean and variance is computed. This running average is used as a sample estimate during inference. It should be immediately obvious that the running average value is not a good approximation of the sample variance during inference, because dropout behavior changes the variance.  See **Xiang Li, Shuo Chen, Xiaolin Hu, Jian Yang**, "*Understanding the Disharmony between Dropout and Batch Normalization by Variance Shift*", [arXiv:1801.05134](https://arxiv.org/abs/1801.05134).<br/>
 # One of the proposed solutions is to recompute the batch normalization running average without dropout, while freezing other layers. The resulting accuracy is expected to be slightly better.
 
-# In[ ]:
+# In[84]:
 
 
 model2 = build_model(with_dropout=False)
@@ -408,14 +420,14 @@ model2.load_weights(model_name)
 model2.summary()
 
 
-# In[ ]:
+# In[85]:
 
 
 model2.compile(Adam(lr=0.002), loss='mean_squared_error')
 model2.evaluate(val_a, val_b, verbose=0)
 
 
-# In[ ]:
+# In[86]:
 
 
 # Recompute the mean and variance running average without dropout
@@ -431,7 +443,7 @@ model2.compile(Adam(lr=0.002), loss='mean_squared_error')
 model2.save('cropping.model')
 
 
-# In[ ]:
+# In[87]:
 
 
 model2.evaluate(val_a, val_b, verbose=0)
@@ -441,7 +453,7 @@ model2.evaluate(val_a, val_b, verbose=0)
 # The model is not trained over the validation set, so it represents a fair assessment of the bounding box model accuracy.<br/>
 # The following figure shows the transformed whale images, the reference bounding boxes in red and the computed bounding boxes in yellow for all images from the bounding box validation set (200).
 
-# In[ ]:
+# In[88]:
 
 
 images = []
@@ -459,18 +471,18 @@ show_whale(images)
 
 # # Generate best bounding boxes
 
-# In[ ]:
+# In[91]:
 
 
 from pandas import read_csv
 
-tagged = [p for _,p,_ in read_csv('../input/whale-categorization-playground/train.csv').to_records()]
-submit = [p for _,p,_ in read_csv('../input/whale-categorization-playground/sample_submission.csv').to_records()]
+tagged = [p for _,p,_ in read_csv('./input/whale-categorization-playground/train.csv').to_records()]
+submit = [p for _,p,_ in read_csv('./input/whale-categorization-playground/sample_submission.csv').to_records()]
 join = tagged + submit
 len(join)
 
 
-# In[ ]:
+# In[92]:
 
 
 # If the picture is part of the bounding box dataset, use the golden value.
@@ -479,7 +491,7 @@ for i,(p,coords) in enumerate(data): p2bb[p] = bounding_rectangle(coords)
 len(p2bb)
 
 
-# In[ ]:
+# In[93]:
 
 
 # For other pictures, evaluate the model.
@@ -493,7 +505,7 @@ for p in tqdm_notebook(join):
         p2bb[p]           = (u0, v0, u1, v1)
 
 
-# In[ ]:
+# In[94]:
 
 
 import pickle
@@ -503,7 +515,7 @@ with open('bounding-box.pickle', 'wb') as f: pickle.dump(p2bb, f)
 
 # # Show some examples
 
-# In[ ]:
+# In[95]:
 
 
 samples = []
@@ -518,7 +530,7 @@ show_whale(samples)
 
 # # Generated files
 
-# In[ ]:
+# In[96]:
 
 
 import os
@@ -528,7 +540,7 @@ os.remove('cropping-2.h5')
 os.remove('cropping-3.h5')
 
 
-# In[ ]:
+# In[97]:
 
 
 get_ipython().system('ls *.pickle *.model')

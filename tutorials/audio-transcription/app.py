@@ -12,6 +12,9 @@ import nemo.collections.asr as nemo_asr
 import librosa
 import soundfile
 
+#todo: Split out UI from Model stuff (maybe a class)... keep get youtube in the ui though
+# onclick may not know what happens but calls the class 
+
 TITLE = "NeMo ASR"
 DESCRIPTION = "Demo of Various Models in NeMo ASR"
 DEFAULT_EN_MODEL = "stt_en_citrinet_512"
@@ -49,6 +52,7 @@ for mdl in available_models:
 SUPPORTED_MODEL_NAMES = sorted(list(SUPPORTED_MODEL_NAMES))
 
 def resample_audio(file, sr=44100):   
+    #Todo: refactor standard outs to be prints
     sys.stdout.write("[INFO] Resampling Audio...\n\n") 
     y,s =librosa.load(file, sr)
     conversion = file + ".wav"
@@ -63,7 +67,7 @@ def get_youtube_audio(url):
     base, ext = os.path.splitext(out_file)
     new_file = base.replace(" ", "")
     os.rename(out_file, new_file)
-    audio = resample_audio(new_file)
+    audio = new_file
     print(['file', audio])
     return audio
     
@@ -109,8 +113,11 @@ def transcribe(microphone, audio_file, model_name):
     return f'{transcriptions[0]}'
 
 
+##Two funcs - one that cleans and one that transcribes. Transcribe doesnt do any conditional testing. The cleanup one would be all the if else stuff
+
 
 demo = gr.Blocks(title=TITLE, css=CSS)
+# Could create a variable like gr.Row as a variable and then call these
 with demo:
     header = gr.Markdown(MARKDOWN)
 
@@ -124,6 +131,7 @@ with demo:
             run_youtube_upload.click(get_youtube_audio, inputs=[youtube_upload], outputs=[file_upload])
 
     models = gr.components.Dropdown(
+        ## I dont need to sort this twice
         choices=sorted(list(SUPPORTED_MODEL_NAMES)),
         value=DEFAULT_EN_MODEL,
         label="Models",
